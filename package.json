@@ -1,0 +1,41 @@
+{
+  "name": "tournament-management-system",
+  "version": "1.0.0",
+  "description": "A comprehensive web-based tournament management system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "tournament",
+    "management",
+    "sports",
+    "gaming",
+    "competition",
+    "nodejs",
+    "express",
+    "supabase"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/tournament-management-system.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/tournament-management-system/issues"
+  },
+  "homepage": "https://github.com/yourusername/tournament-management-system#readme"
+}

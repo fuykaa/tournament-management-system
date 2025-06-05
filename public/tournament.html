@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Tournament Management System</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 3em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-button {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .tab-button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .tab-button.active {
+            background: white;
+            color: #667eea;
+        }
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            flex: 1;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+            margin: 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .btn-edit {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        .btn-delete {
+            background: linear-gradient(45deg, #dc3545, #e74c3c);
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        .btn-cancel {
+            background: linear-gradient(45deg, #6c757d, #5a6268);
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            position: relative;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+        .modal h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .edit-form {
+            display: none;
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        .match-result {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .score {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #28a745;
+        }
+        .winner {
+            color: #ffc107;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Tournament Management System</h1>
+            <p>Professional Tournament & Team Management</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-button active" onclick="showTab('players')">👤 Players</button>
+            <button class="tab-button" onclick="showTab('teams')">👥 Teams</button>
+            <button class="tab-button" onclick="showTab('tournaments')">🏆 Tournaments</button>
+            <button class="tab-button" onclick="showTab('matches')">⚔️ Matches</button>
+            <button class="tab-button" onclick="showTab('stats')">📊 Statistics</button>
+        </div>
+
+        <!-- Players Tab -->
+        <div id="players" class="tab-content active">
+            <div class="section">
+                <h2>➕ Add New Player</h2>
+                <form id="playerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="player_name">Player Name:</label>
+                            <input type="text" id="player_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Age:</label>
+                            <input type="number" id="age" min="13" max="60" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" required>
+                        </div>
+                    </div>
+                    <button type="submit">🚀 Add Player</button>
+                </form>
+                <div id="playerMessage"></div>
+            </div>
+
+            <div class="section">
+                <h2>👤 Players Management</h2>
+                <div id="playersList" class="loading">Loading players...</div>
+            </div>
+        </div>
+
+        <!-- Teams Tab -->
+        <div id="teams" class="tab-content">
+            <div class="section">
+                <h2>➕ Create New Team</h2>
+                <form id="teamForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="team_name">Team Name:</label>
+                            <input type="text" id="team_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="captain_id">Captain:</label>
+                            <select id="captain_id" required>
+                                <option value="">Select Captain</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit">🚀 Create Team</button>
+                </form>
+                <div id="teamMessage"></div>
+            </div>
+
+            <div class="section">
+                <h2>👥 Teams Management</h2>
+                <div id="teamsList" class="loading">Loading teams...</div>
+            </div>
+        </div>
+
+        <!-- Tournaments Tab -->
+        <div id="tournaments" class="tab-content">
+            <div class="section">
+                <h2>🏆 Tournaments</h2>
+                <div id="tournamentsList" class="loading">Loading tournaments...</div>
+            </div>
+        </div>
+
+        <!-- Matches Tab -->
+        <div id="matches" class="tab-content">
+            <div class="section">
+                <h2>⚔️ Match Results</h2>
+                <div id="matchesList" class="loading">Loading matches...</div>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="stats" class="tab-content">
+            <div class="section">
+                <h2>📊 Advanced Analytics</h2>
+                <p>Professional statistics and performance insights</p>
+                
+                <div style="margin-bottom: 20px;">
+                    <button onclick="loadStatistics('players')" class="btn-edit">👤 Player Stats</button>
+                    <button onclick="loadStatistics('teams')" class="btn-edit">👥 Team Rankings</button>
+                    <button onclick="loadStatistics('tournaments')" class="btn-edit">🏆 Tournament Summary</button>
+                </div>
+                
+                <div id="statisticsContent" class="loading">Select a statistics view above</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Player Modal -->
+    <div id="editPlayerModal" class="modal">
+        <div class="modal-content">
+            <h3>✏️ Edit Player</h3>
+            <form id="editPlayerForm">
+                <input type="hidden" id="edit_player_id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_player_name">Player Name:</label>
+                        <input type="text" id="edit_player_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_age">Age:</label>
+                        <input type="number" id="edit_age" min="13" max="60" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_username">Username:</label>
+                        <input type="text" id="edit_username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_email">Email:</label>
+                        <input type="email" id="edit_email" required>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button type="submit" class="btn-edit">💾 Save Changes</button>
+                    <button type="button" onclick="closeModal('editPlayerModal')" class="btn-cancel">❌ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Team Modal -->
+    <div id="editTeamModal" class="modal">
+        <div class="modal-content">
+            <h3>✏️ Edit Team</h3>
+            <form id="editTeamForm">
+                <input type="hidden" id="edit_team_id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_team_name">Team Name:</label>
+                        <input type="text" id="edit_team_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_captain_id">Captain:</label>
+                        <select id="edit_captain_id" required>
+                            <option value="">Select Captain</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button type="submit" class="btn-edit">💾 Save Changes</button>
+                    <button type="button" onclick="closeModal('editTeamModal')" class="btn-cancel">❌ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        // Tab functionality
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            loadTabData(tabName);
+        }
+
+        function loadTabData(tabName) {
+            switch(tabName) {
+                case 'players':
+                    loadPlayers();
+                    break;
+                case 'teams':
+                    loadTeams();
+                    loadPlayersForDropdown();
+                    break;
+                case 'tournaments':
+                    loadTournaments();
+                    break;
+                case 'matches':
+                    loadMatches();
+                    break;
+                case 'stats':
+                    // Statistics loaded on demand
+                    break;
+            }
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Load players with Edit/Delete functionality
+        async function loadPlayers() {
+            try {
+                const response = await fetch(`${API_URL}/players`);
+                const players = await response.json();
+                
+                const playersList = document.getElementById('playersList');
+                
+                if (players.length === 0) {
+                    playersList.innerHTML = '<div class="loading">No players found. Add some players!</div>';
+                    return;
+                }
+                
+                playersList.innerHTML = '';
+                const playersGrid = document.createElement('div');
+                playersGrid.className = 'grid';
+                
+                players.forEach(player => {
+                    const playerCard = document.createElement('div');
+                    playerCard.className = 'card';
+                    playerCard.innerHTML = `
+                        <h3>👤 ${player.player_name}</h3>
+                        <p><strong>Age:</strong> ${player.age} years</p>
+                        <p><strong>Username:</strong> @${player.username}</p>
+                        <p><strong>Email:</strong> ${player.email}</p>
+                        <p><strong>Teams:</strong> ${player.teams || 'No team'}</p>
+                        <small>📅 Joined: ${new Date(player.created_at).toLocaleDateString('id-ID')}</small>
+                        <div class="card-actions">
+                            <button class="btn-edit" onclick="editPlayer(${player.player_id})">✏️ Edit</button>
+                            <button class="btn-delete" onclick="deletePlayer(${player.player_id}, '${player.player_name}')">🗑️ Delete</button>
+                        </div>
+                    `;
+                    playersGrid.appendChild(playerCard);
+                });
+                
+                playersList.appendChild(playersGrid);
+                
+            } catch (error) {
+                console.error('Error loading players:', error);
+                document.getElementById('playersList').innerHTML = 
+                    '<div class="error">❌ Error loading players</div>';
+            }
+        }
+
+        // Edit player function
+        async function editPlayer(playerId) {
+            try {
+                const response = await fetch(`${API_URL}/players`);
+                const players = await response.json();
+                const player = players.find(p => p.player_id === playerId);
+                
+                if (player) {
+                    document.getElementById('edit_player_id').value = player.player_id;
+                    document.getElementById('edit_player_name').value = player.player_name;
+                    document.getElementById('edit_age').value = player.age;
+                    document.getElementById('edit_username').value = player.username;
+                    document.getElementById('edit_email').value = player.email;
+                    
+                    openModal('editPlayerModal');
+                }
+            } catch (error) {
+                console.error('Error loading player for edit:', error);
+            }
+        }
+
+        // Delete player function
+        async function deletePlayer(playerId, playerName) {
+            if (!confirm(`Are you sure you want to delete player "${playerName}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/players/${playerId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showMessage('playerMessage', 'success', '✅ Player deleted successfully!');
+                    loadPlayers();
+                } else {
+                    showMessage('playerMessage', 'error', `❌ Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error deleting player:', error);
+                showMessage('playerMessage', 'error', '❌ Error connecting to server');
+            }
+        }
+
+        // Load teams with Edit/Delete functionality
+        async function loadTeams() {
+            try {
+                const response = await fetch(`${API_URL}/teams`);
+                const teams = await response.json();
+                
+                const teamsList = document.getElementById('teamsList');
+                
+                if (teams.length === 0) {
+                    teamsList.innerHTML = '<div class="loading">No teams found. Create some teams!</div>';
+                    return;
+                }
+                
+                teamsList.innerHTML = '';
+                const teamsGrid = document.createElement('div');
+                teamsGrid.className = 'grid';
+                
+                teams.forEach(team => {
+                    const teamCard = document.createElement('div');
+                    teamCard.className = 'card';
+                    teamCard.innerHTML = `
+                        <h3>👥 ${team.team_name}</h3>
+                        <p><strong>Captain:</strong> ${team.captain_name || 'No captain'}</p>
+                        <p><strong>Members:</strong> ${team.member_count} players</p>
+                        <small>📅 Created: ${new Date(team.created_at).toLocaleDateString('id-ID')}</small>
+                        <div class="card-actions">
+                            <button class="btn-edit" onclick="editTeam(${team.team_id})">✏️ Edit</button>
+                            <button class="btn-delete" onclick="deleteTeam(${team.team_id}, '${team.team_name}')">🗑️ Delete</button>
+                        </div>
+                    `;
+                    teamsGrid.appendChild(teamCard);
+                });
+                
+                teamsList.appendChild(teamsGrid);
+                
+            } catch (error) {
+                console.error('Error loading teams:', error);
+                document.getElementById('teamsList').innerHTML = 
+                    '<div class="error">❌ Error loading teams</div>';
+            }
+        }
+
+        // Edit team function
+        async function editTeam(teamId) {
+            try {
+                const [teamsResponse, playersResponse] = await Promise.all([
+                    fetch(`${API_URL}/teams`),
+                    fetch(`${API_URL}/players/simple`)
+                ]);
+                
+                const teams = await teamsResponse.json();
+                const players = await playersResponse.json();
+                const team = teams.find(t => t.team_id === teamId);
+                
+                if (team) {
+                    document.getElementById('edit_team_id').value = team.team_id;
+                    document.getElementById('edit_team_name').value = team.team_name;
+                    
+                    // Populate captain dropdown
+                    const captainSelect = document.getElementById('edit_captain_id');
+                    captainSelect.innerHTML = '<option value="">Select Captain</option>';
+                    
+                    players.forEach(player => {
+                        const option = document.createElement('option');
+                        option.value = player.player_id;
+                        option.textContent = player.player_name;
+                        if (player.player_id === team.captain_id) {
+                            option.selected = true;
+                        }
+                        captainSelect.appendChild(option);
+                    });
+                    
+                    openModal('editTeamModal');
+                }
+            } catch (error) {
+                console.error('Error loading team for edit:', error);
+            }
+        }
+
+        // Delete team function
+        async function deleteTeam(teamId, teamName) {
+            if (!confirm(`Are you sure you want to delete team "${teamName}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/teams/${teamId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showMessage('teamMessage', 'success', '✅ Team deleted successfully!');
+                    loadTeams();
+                } else {
+                    showMessage('teamMessage', 'error', `❌ Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error deleting team:', error);
+                showMessage('teamMessage', 'error', '❌ Error connecting to server');
+            }
+        }
+
+        // Load statistics from VIEWs
+        async function loadStatistics(type) {
+            const statisticsContent = document.getElementById('statisticsContent');
+            statisticsContent.innerHTML = '<div class="loading">Loading statistics...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/stats/${type}`);
+                const stats = await response.json();
+                
+                statisticsContent.innerHTML = '';
+                
+                if (stats.length === 0) {
+                    statisticsContent.innerHTML = '<div class="loading">No data available</div>';
+                    return;
+                }
+                
+                let title = '';
+                let content = '';
+                
+                switch(type) {
+                    case 'players':
+                        title = '👤 Player Performance Analytics';
+                        content = createPlayerStatsTable(stats);
+                        break;
+                    case 'teams':
+                        title = '👥 Team Performance Rankings';
+                        content = createTeamRankingsTable(stats);
+                        break;
+                    case 'tournaments':
+                        title = '🏆 Tournament Management Summary';
+                        content = createTournamentSummaryTable(stats);
+                        break;
+                }
+                
+                statisticsContent.innerHTML = `
+                    <h3>${title}</h3>
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <strong>📋 Advanced Analytics:</strong> Data retrieved from MySQL VIEWs with complex calculations
+                    </div>
+                    ${content}
+                `;
+                
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+                statisticsContent.innerHTML = '<div class="error">❌ Error loading statistics</div>';
+            }
+        }
+
+        function createPlayerStatsTable(stats) {
+            return `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden;">
+                        <thead style="background: #667eea; color: white;">
+                            <tr>
+                                <th style="padding: 12px; text-align: left;">Player</th>
+                                <th style="padding: 12px; text-align: center;">Age</th>
+                                <th style="padding: 12px; text-align: center;">Teams</th>
+                                <th style="padding: 12px; text-align: center;">Tournaments</th>
+                                <th style="padding: 12px; text-align: center;">Matches Won</th>
+                                <th style="padding: 12px; text-align: center;">Total Matches</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${stats.map(player => `
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 12px;"><strong>${player.player_name}</strong><br><small>@${player.username}</small></td>
+                                    <td style="padding: 12px; text-align: center;">${player.age}</td>
+                                    <td style="padding: 12px; text-align: center;">${player.total_teams}</td>
+                                    <td style="padding: 12px; text-align: center;">${player.tournaments_played}</td>
+                                    <td style="padding: 12px; text-align: center; color: #28a745; font-weight: bold;">${player.matches_won}</td>
+                                    <td style="padding: 12px; text-align: center;">${player.total_matches}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function createTeamRankingsTable(stats) {
+            return `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden;">
+                        <thead style="background: #28a745; color: white;">
+                            <tr>
+                                <th style="padding: 12px; text-align: left;">Rank</th>
+                                <th style="padding: 12px; text-align: left;">Team</th>
+                                <th style="padding: 12px; text-align: left;">Captain</th>
+                                <th style="padding: 12px; text-align: center;">Members</th>
+                                <th style="padding: 12px; text-align: center;">Tournaments</th>
+                                <th style="padding: 12px; text-align: center;">Wins</th>
+                                <th style="padding: 12px; text-align: center;">Win %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${stats.map((team, index) => `
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 12px; font-weight: bold; color: ${index < 3 ? '#ffc107' : '#666'};">
+                                        ${index + 1}${index === 0 ? ' 🥇' : index === 1 ? ' 🥈' : index === 2 ? ' 🥉' : ''}
+                                    </td>
+                                    <td style="padding: 12px;"><strong>${team.team_name}</strong></td>
+                                    <td style="padding: 12px;">${team.captain_name || 'No captain'}</td>
+                                    <td style="padding: 12px; text-align: center;">${team.member_count}</td>
+                                    <td style="padding: 12px; text-align: center;">${team.tournaments_joined}</td>
+                                    <td style="padding: 12px; text-align: center; color: #28a745; font-weight: bold;">${team.wins}</td>
+                                    <td style="padding: 12px; text-align: center; font-weight: bold;">${team.win_percentage}%</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function createTournamentSummaryTable(stats) {
+            return `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden;">
+                        <thead style="background: #ffc107; color: #212529;">
+                            <tr>
+                                <th style="padding: 12px; text-align: left;">Tournament</th>
+                                <th style="padding: 12px; text-align: left;">Season</th>
+                                <th style="padding: 12px; text-align: left;">Organizer</th>
+                                <th style="padding: 12px; text-align: center;">Teams</th>
+                                <th style="padding: 12px; text-align: center;">Matches</th>
+                                <th style="padding: 12px; text-align: center;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${stats.map(tournament => `
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 12px;"><strong>${tournament.tour_name}</strong></td>
+                                    <td style="padding: 12px;">${tournament.tour_season}</td>
+                                    <td style="padding: 12px;">${tournament.organizer || 'Unknown'}</td>
+                                    <td style="padding: 12px; text-align: center;">${tournament.participating_teams}</td>
+                                    <td style="padding: 12px; text-align: center;">${tournament.total_matches}</td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: white;
+                                            background: ${tournament.tournament_status === 'Completed' ? '#28a745' : 
+                                                         tournament.tournament_status === 'In Progress' ? '#ffc107' : '#6c757d'};">
+                                            ${tournament.tournament_status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Load tournaments
+        async function loadTournaments() {
+            try {
+                const response = await fetch(`${API_URL}/tournaments`);
+                const tournaments = await response.json();
+                
+                const tournamentsList = document.getElementById('tournamentsList');
+                
+                if (tournaments.length === 0) {
+                    tournamentsList.innerHTML = '<div class="loading">No tournaments found.</div>';
+                    return;
+                }
+                
+                tournamentsList.innerHTML = '';
+                const tournamentsGrid = document.createElement('div');
+                tournamentsGrid.className = 'grid';
+                
+                tournaments.forEach(tournament => {
+                    const tournamentCard = document.createElement('div');
+                    tournamentCard.className = 'card';
+                    tournamentCard.innerHTML = `
+                        <h3>🏆 ${tournament.tour_name}</h3>
+                        <p><strong>Season:</strong> ${tournament.tour_season}</p>
+                        <p><strong>Organizer:</strong> ${tournament.organizer_name || 'Unknown'}</p>
+                        <p><strong>Participants:</strong> ${tournament.participant_count}/${tournament.max_participants}</p>
+                        <p><strong>Start:</strong> ${new Date(tournament.start_date).toLocaleDateString('id-ID')}</p>
+                        <p><strong>End:</strong> ${new Date(tournament.end_date).toLocaleDateString('id-ID')}</p>
+                    `;
+                    tournamentsGrid.appendChild(tournamentCard);
+                });
+                
+                tournamentsList.appendChild(tournamentsGrid);
+                
+            } catch (error) {
+                console.error('Error loading tournaments:', error);
+                document.getElementById('tournamentsList').innerHTML = 
+                    '<div class="error">❌ Error loading tournaments</div>';
+            }
+        }
+
+        // Load matches
+        async function loadMatches() {
+            try {
+                const response = await fetch(`${API_URL}/matches`);
+                const matches = await response.json();
+                
+                const matchesList = document.getElementById('matchesList');
+                
+                if (matches.length === 0) {
+                    matchesList.innerHTML = '<div class="loading">No matches found.</div>';
+                    return;
+                }
+                
+                matchesList.innerHTML = '';
+                
+                matches.forEach(match => {
+                    const matchCard = document.createElement('div');
+                    matchCard.className = 'card';
+                    
+                    let resultHtml = '';
+                    if (match.team1_score !== null && match.team2_score !== null) {
+                        resultHtml = `
+                            <div class="match-result">
+                                <span>${match.team1_name}</span>
+                                <span class="score">${match.team1_score} - ${match.team2_score}</span>
+                                <span>${match.team2_name}</span>
+                            </div>
+                            <p class="winner">🏆 Winner: ${match.winner_name}</p>
+                            <p><strong>Duration:</strong> ${match.match_duration} minutes</p>
+                        `;
+                    } else {
+                        resultHtml = `
+                            <div class="match-result">
+                                <span>${match.team1_name}</span>
+                                <span>VS</span>
+                                <span>${match.team2_name}</span>
+                            </div>
+                            <p><strong>Status:</strong> ${match.status}</p>
+                        `;
+                    }
+                    
+                    matchCard.innerHTML = `
+                        <h3>⚔️ ${match.tour_name} - ${match.round}</h3>
+                        ${resultHtml}
+                        <small>📅 Scheduled: ${new Date(match.scheduled_at).toLocaleString('id-ID')}</small>
+                    `;
+                    matchesList.appendChild(matchCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading matches:', error);
+                document.getElementById('matchesList').innerHTML = 
+                    '<div class="error">❌ Error loading matches</div>';
+            }
+        }
+
+        // Load players for dropdown
+        async function loadPlayersForDropdown() {
+            try {
+                const response = await fetch(`${API_URL}/players/simple`);
+                const players = await response.json();
+                
+                const captainSelect = document.getElementById('captain_id');
+                captainSelect.innerHTML = '<option value="">Select Captain</option>';
+                
+                players.forEach(player => {
+                    const option = document.createElement('option');
+                    option.value = player.player_id;
+                    option.textContent = player.player_name;
+                    captainSelect.appendChild(option);
+                });
+                
+            } catch (error) {
+                console.error('Error loading players for dropdown:', error);
+            }
+        }
+
+        // Helper function to show messages
+        function showMessage(elementId, type, message) {
+            const messageDiv = document.getElementById(elementId);
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        // Form event listeners
+        document.getElementById('playerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                player_name: document.getElementById('player_name').value.trim(),
+                age: parseInt(document.getElementById('age').value),
+                username: document.getElementById('username').value.trim(),
+                email: document.getElementById('email').value.trim()
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/players`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('playerForm').reset();
+                    showMessage('playerMessage', 'success', '✅ Player added successfully!');
+                    loadPlayers();
+                } else {
+                    showMessage('playerMessage', 'error', `❌ Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error adding player:', error);
+                showMessage('playerMessage', 'error', '❌ Error connecting to server');
+            }
+        });
+
+        document.getElementById('editPlayerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const playerId = document.getElementById('edit_player_id').value;
+            const formData = {
+                player_name: document.getElementById('edit_player_name').value.trim(),
+                age: parseInt(document.getElementById('edit_age').value),
+                username: document.getElementById('edit_username').value.trim(),
+                email: document.getElementById('edit_email').value.trim()
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/players/${playerId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    closeModal('editPlayerModal');
+                    showMessage('playerMessage', 'success', '✅ Player updated successfully!');
+                    loadPlayers();
+                } else {
+                    showMessage('playerMessage', 'error', `❌ Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error updating player:', error);
+                showMessage('playerMessage', 'error', '❌ Error connecting to server');
+            }
+        });
+
+        document.getElementById('teamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                team_name: document.getElementById('team_name').value.trim(),
+                captain_id: parseInt(document.getElementById('captain_id').value)
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/teams`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('teamForm').reset();
+                    showMessage('teamMessage', 'success', '✅ Team created successfully!');
+                    loadTeams();
+                } else {
+                    showMessage('teamMessage', 'error', `❌ Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error creating team:', error);
+                showMessage('teamMessage', 'error', '❌ Error connecting to server');
+            }
+        });
+
+        document.getElementById('editTeamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const teamId = document.getElementById('edit_team_id').value;
+            const formData = {
+                team_name: document.getElementById('edit_team_name').value.trim(),
+                captain_id: parseInt(document.getElementById('edit_captain_id').value)
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/teams/${teamId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    closeModal('editTeamModal');
+                    showMessage('teamMessage', 'success', '✅ Team updated successfully!');
+                    loadTeams();
+                } else {
+                    showMessage('teamMessage', 'error', `❌ Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Error updating team:', error);
+                showMessage('teamMessage', 'error', '❌ Error connecting to server');
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Load initial data
+        loadPlayers();
+    </script>
+</body>
+</html>
